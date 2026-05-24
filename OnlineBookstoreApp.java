@@ -107,7 +107,7 @@ public class OnlineBookstoreApp extends JFrame {
     private static final Color BUTTON_HOVER = new Color(180, 130, 80);     // Lighter Brown
 
     public OnlineBookstoreApp() {
-        setTitle("☕ Aesthetic Book Cafe - Online Bookstore");
+        setTitle("📚 INK AND LANTERN BOOKS - Online Bookstore");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -159,11 +159,11 @@ public class OnlineBookstoreApp extends JFrame {
         panel.setLayout(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        JLabel titleLabel = new JLabel("☕ Aesthetic Book Cafe");
+        JLabel titleLabel = new JLabel("INK AND LANTERN BOOKS");
         titleLabel.setFont(new Font("Georgia", Font.BOLD, 28));
         titleLabel.setForeground(Color.WHITE);
 
-        JLabel subtitleLabel = new JLabel("Discover Your Next Favorite Read");
+        JLabel subtitleLabel = new JLabel("A cozy library-inspired shopping experience");
         subtitleLabel.setFont(new Font("Georgia", Font.ITALIC, 14));
         subtitleLabel.setForeground(new Color(220, 200, 170));
 
