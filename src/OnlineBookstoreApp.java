@@ -323,15 +323,19 @@ public class OnlineBookstoreApp extends JFrame {
     private JPanel cardPanel;
 
     // Color scheme
-    private static final Color BG_COLOR = new Color(245, 242, 235);        // Cream
-    private static final Color PRIMARY_COLOR = new Color(139, 90, 43);     // Brown
-    private static final Color SECONDARY_COLOR = new Color(210, 165, 104); // Light Brown
-    private static final Color ACCENT_COLOR = new Color(184, 134, 11);     // Dark Goldenrod
-    private static final Color TEXT_COLOR = new Color(60, 40, 20);         // Dark Brown
-    private static final Color BUTTON_COLOR = new Color(160, 110, 60);     // Medium Brown
-    private static final Color BUTTON_HOVER = new Color(180, 130, 80);     // Lighter Brown
-    private static final Color ERROR_COLOR = new Color(200, 50, 50);       // Red
-    private static final Color SUCCESS_COLOR = new Color(50, 150, 50);     // Green
+    // Color scheme (soft modern bookstore theme)
+    private static final Color BG_COLOR = new Color(250, 247, 242);        // Warm Cream #FAF7F2 (main background)
+    private static final Color SECONDARY_BG = new Color(241, 236, 230);    // Soft Beige #F1ECE6 (secondary background)
+    private static final Color PRIMARY_COLOR = new Color(108, 142, 191);   // Dusty Blue #6C8EBF (navbar / buttons)
+    private static final Color SECONDARY_COLOR = new Color(143, 168, 201); // Soft Slate Blue #8FA8C9 (secondary)
+    private static final Color ACCENT_COLOR = new Color(232, 199, 106);    // Soft Mustard #E8C76A (highlights/prices)
+    private static final Color CARD_COLOR = new Color(255, 255, 255);      // White #FFFFFF (cards/panels)
+    private static final Color TEXT_COLOR = new Color(47, 47, 47);         // Soft Dark Grey #2F2F2F (main text)
+    private static final Color SECONDARY_TEXT = new Color(122, 122, 122);  // Grey #7A7A7A (secondary text)
+    private static final Color BUTTON_COLOR = PRIMARY_COLOR;               // Buttons use primary dusty blue
+    private static final Color BUTTON_HOVER = SECONDARY_COLOR;             // Slightly lighter/different blue on hover
+    private static final Color ERROR_COLOR = new Color(217, 124, 108);     // Muted Coral #D97C6C (errors)
+    private static final Color SUCCESS_COLOR = new Color(123, 174, 127);   // Sage Green #7BAE7F (success)
 
     public OnlineBookstoreApp() {
         setTitle("📚 INK AND LANTERN BOOKS - Online Bookstore");
@@ -402,7 +406,7 @@ public class OnlineBookstoreApp extends JFrame {
 
         JLabel subtitleLabel = new JLabel("A cozy library-inspired shopping experience");
         subtitleLabel.setFont(new Font("Georgia", Font.ITALIC, 14));
-        subtitleLabel.setForeground(new Color(220, 200, 170));
+        subtitleLabel.setForeground(SECONDARY_TEXT);
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         headerPanel.add(titleLabel);
@@ -572,7 +576,7 @@ public class OnlineBookstoreApp extends JFrame {
 
         JLabel userLabel = new JLabel("Welcome, " + (currentUser != null ? currentUser.getFullName() : "Guest"));
         userLabel.setFont(new Font("Georgia", Font.PLAIN, 14));
-        userLabel.setForeground(new Color(220, 200, 170));
+        userLabel.setForeground(SECONDARY_TEXT);
 
         panel.add(titleLabel, BorderLayout.WEST);
         panel.add(userLabel, BorderLayout.CENTER);
@@ -605,7 +609,7 @@ public class OnlineBookstoreApp extends JFrame {
         // Account Info Card
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(Color.WHITE);
+        infoPanel.setBackground(CARD_COLOR);
         infoPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(SECONDARY_COLOR, 2, true),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
@@ -632,7 +636,7 @@ public class OnlineBookstoreApp extends JFrame {
 
         JPanel editPanel = new JPanel();
         editPanel.setLayout(new BoxLayout(editPanel, BoxLayout.Y_AXIS));
-        editPanel.setBackground(Color.WHITE);
+        editPanel.setBackground(CARD_COLOR);
         editPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(SECONDARY_COLOR, 2, true),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
@@ -670,7 +674,7 @@ public class OnlineBookstoreApp extends JFrame {
 
     private void addAccountInfoRow(JPanel panel, String label, String value) {
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        row.setBackground(Color.WHITE);
+        row.setBackground(CARD_COLOR);
         row.setMaximumSize(new Dimension(600, 30));
 
         JLabel labelComp = new JLabel(label);
@@ -696,12 +700,12 @@ public class OnlineBookstoreApp extends JFrame {
 
         // Category Filter
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        filterPanel.setBackground(SECONDARY_COLOR);
+        filterPanel.setBackground(SECONDARY_BG);
         filterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JLabel filterLabel = new JLabel("Filter by Category:");
         filterLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        filterLabel.setForeground(Color.WHITE);
+        filterLabel.setForeground(TEXT_COLOR);
 
         JComboBox<String> categoryFilter = new JComboBox<>();
         categoryFilter.addItem("All Categories");
@@ -716,7 +720,7 @@ public class OnlineBookstoreApp extends JFrame {
 
         bookModel = new DefaultTableModel(new String[]{"📖 ID", "📚 Title", "✍️ Author", "💰 Price", "📦 Stock", "🏷️ Category"}, 0);
         bookTable = new JTable(bookModel);
-        bookTable.setBackground(Color.WHITE);
+        bookTable.setBackground(CARD_COLOR);
         bookTable.setForeground(TEXT_COLOR);
         bookTable.setSelectionBackground(SECONDARY_COLOR);
         bookTable.setSelectionForeground(TEXT_COLOR);
@@ -807,7 +811,7 @@ public class OnlineBookstoreApp extends JFrame {
 
         cartModel = new DefaultTableModel(new String[]{"📚 Title", "🔢 Qty", "💵 Unit Price", "💰 Subtotal"}, 0);
         cartTable = new JTable(cartModel);
-        cartTable.setBackground(Color.WHITE);
+        cartTable.setBackground(CARD_COLOR);
         cartTable.setForeground(TEXT_COLOR);
         cartTable.setSelectionBackground(SECONDARY_COLOR);
         cartTable.setSelectionForeground(TEXT_COLOR);
@@ -1013,7 +1017,7 @@ public class OnlineBookstoreApp extends JFrame {
 
         DefaultTableModel orderModel = new DefaultTableModel(new String[]{"Order ID", "Customer", "Total", "Status", "Date"}, 0);
         JTable orderTable = new JTable(orderModel);
-        orderTable.setBackground(Color.WHITE);
+        orderTable.setBackground(CARD_COLOR);
         orderTable.setForeground(TEXT_COLOR);
         orderTable.setSelectionBackground(SECONDARY_COLOR);
         orderTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -1070,7 +1074,7 @@ public class OnlineBookstoreApp extends JFrame {
 
         DefaultTableModel shipmentModel = new DefaultTableModel(new String[]{"Shipment ID", "Order ID", "Tracking #", "Status", "Date"}, 0);
         JTable shipmentTable = new JTable(shipmentModel);
-        shipmentTable.setBackground(Color.WHITE);
+        shipmentTable.setBackground(CARD_COLOR);
         shipmentTable.setForeground(TEXT_COLOR);
         shipmentTable.setSelectionBackground(SECONDARY_COLOR);
         shipmentTable.setFont(new Font("Segoe UI", Font.PLAIN, 11));
@@ -1160,7 +1164,7 @@ public class OnlineBookstoreApp extends JFrame {
     // ==================== UTILITY METHODS ====================
     private JPanel createFormField(String labelText, JComponent field) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(CARD_COLOR);
         panel.setMaximumSize(new Dimension(700, 40));
 
         JLabel label = new JLabel(labelText);
@@ -1171,11 +1175,11 @@ public class OnlineBookstoreApp extends JFrame {
         field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         field.setPreferredSize(new Dimension(450, 35));
         if (field instanceof JTextField) {
-            ((JTextField) field).setBackground(Color.WHITE);
+            ((JTextField) field).setBackground(CARD_COLOR);
             ((JTextField) field).setForeground(TEXT_COLOR);
             ((JTextField) field).setBorder(BorderFactory.createLineBorder(SECONDARY_COLOR, 1));
         } else if (field instanceof JPasswordField) {
-            ((JPasswordField) field).setBackground(Color.WHITE);
+            ((JPasswordField) field).setBackground(CARD_COLOR);
             ((JPasswordField) field).setForeground(TEXT_COLOR);
             ((JPasswordField) field).setBorder(BorderFactory.createLineBorder(SECONDARY_COLOR, 1));
         }
