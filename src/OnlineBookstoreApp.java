@@ -323,17 +323,17 @@ public class OnlineBookstoreApp extends JFrame {
     private JPanel cardPanel;
 
     // Color scheme
-    // Color scheme (soft modern bookstore theme)
+    // Color scheme (navy-inspired bookstore theme)
     private static final Color BG_COLOR = new Color(250, 247, 242);        // Warm Cream #FAF7F2 (main background)
     private static final Color SECONDARY_BG = new Color(241, 236, 230);    // Soft Beige #F1ECE6 (secondary background)
-    private static final Color PRIMARY_COLOR = new Color(108, 142, 191);   // Dusty Blue #6C8EBF (navbar / buttons)
-    private static final Color SECONDARY_COLOR = new Color(143, 168, 201); // Soft Slate Blue #8FA8C9 (secondary)
-    private static final Color ACCENT_COLOR = new Color(232, 199, 106);    // Soft Mustard #E8C76A (highlights/prices)
+    private static final Color PRIMARY_COLOR = new Color(8, 35, 70);      // Navy #082346 (navbar / buttons)
+    private static final Color SECONDARY_COLOR = new Color(42, 76, 118);   // Slate Navy #2A4C76 (secondary)
+    private static final Color ACCENT_COLOR = new Color(123, 163, 212);    // Soft Sky Blue #7BA3D4 (highlights/prices)
     private static final Color CARD_COLOR = new Color(255, 255, 255);      // White #FFFFFF (cards/panels)
     private static final Color TEXT_COLOR = new Color(47, 47, 47);         // Soft Dark Grey #2F2F2F (main text)
     private static final Color SECONDARY_TEXT = new Color(122, 122, 122);  // Grey #7A7A7A (secondary text)
-    private static final Color BUTTON_COLOR = PRIMARY_COLOR;               // Buttons use primary dusty blue
-    private static final Color BUTTON_HOVER = SECONDARY_COLOR;             // Slightly lighter/different blue on hover
+    private static final Color BUTTON_COLOR = PRIMARY_COLOR;               // Buttons use primary navy blue
+    private static final Color BUTTON_HOVER = SECONDARY_COLOR;             // Slightly softer navy on hover
     private static final Color ERROR_COLOR = new Color(217, 124, 108);     // Muted Coral #D97C6C (errors)
     private static final Color SUCCESS_COLOR = new Color(123, 174, 127);   // Sage Green #7BAE7F (success)
 
