@@ -1,3 +1,4 @@
+import java.io.File;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -38,8 +39,9 @@ class Book {
     private int stock;
     private Category category;
     private String description;
+    private String imagePath;
 
-    public Book(int id, String title, String author, double price, int stock, Category category, String description) {
+    public Book(int id, String title, String author, double price, int stock, Category category, String description, String imagePath) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -47,6 +49,11 @@ class Book {
         this.stock = stock;
         this.category = category;
         this.description = description;
+        this.imagePath = imagePath;
+    }
+
+    public String getImagePath() {
+        return imagePath;
     }
 
     public int getId() { return id; }
@@ -377,6 +384,14 @@ public class OnlineBookstoreApp extends JFrame {
     private JPanel cardPanel;
     private JTabbedPane mainTabs;
     private JLabel userHeaderLabel;
+    private JPanel bookCarouselPanel;
+    private JScrollPane bookCarouselScrollPane;
+    private HashMap<Integer, ImageIcon> bookCoverMap = new HashMap<>();
+    private static final String[] IMAGE_DIRS = {
+            "src/images",
+            "images",
+            "/Users/shavinijoseph/Documents/S0FTW4R3_4RC/src/images"
+    };
 
     // Color scheme
     // Color scheme (navy-inspired bookstore theme)
@@ -417,13 +432,13 @@ public class OnlineBookstoreApp extends JFrame {
         categories.add(new Category(4, "Self-Help"));
 
         // Load sample books with categories
-        books.add(new Book(1, "Harry Potter", "J.K. Rowling", 25.99, 10, categories.get(0), "A magical adventure of a young wizard"));
-        books.add(new Book(2, "Atomic Habits", "James Clear", 22.50, 8, categories.get(3), "Transform your life through tiny habits"));
-        books.add(new Book(3, "The Alchemist", "Paulo Coelho", 18.00, 12, categories.get(0), "A philosophical novel about personal journey"));
-        books.add(new Book(4, "Clean Code", "Robert Martin", 45.00, 5, categories.get(2), "A guide to writing better code"));
-        books.add(new Book(5, "AI Basics", "Tom Smith", 30.00, 6, categories.get(2), "Introduction to artificial intelligence"));
-        books.add(new Book(6, "Sapiens", "Yuval Noah Harari", 28.00, 9, categories.get(1), "A brief history of humankind"));
-        books.add(new Book(7, "Thinking, Fast and Slow", "Daniel Kahneman", 35.00, 7, categories.get(1), "Psychology of human behavior"));
+        books.add(new Book(1, "Harry Potter", "J.K. Rowling", 25.99, 10, categories.get(0), "A magical adventure of a young wizard", "harrypotter.jpg"));
+        books.add(new Book(2, "Atomic Habits", "James Clear", 22.50, 8, categories.get(3), "Transform your life through tiny habits", "atomichabits.jpg"));
+        books.add(new Book(3, "The Alchemist", "Paulo Coelho", 18.00, 12, categories.get(0), "A philosophical novel about personal journey", "thealchemist.jpg"));
+        books.add(new Book(4, "Clean Code", "Robert Martin", 45.00, 5, categories.get(2), "A guide to writing better code", "cleancode.jpg"));
+        books.add(new Book(5, "AI Basics", "Tom Smith", 30.00, 6, categories.get(2), "Introduction to artificial intelligence", "aibasics.jpg"));
+        books.add(new Book(6, "Sapiens", "Yuval Noah Harari", 28.00, 9, categories.get(1), "A brief history of humankind", "sapiens.jpg"));
+        books.add(new Book(7, "Thinking, Fast and Slow", "Daniel Kahneman", 35.00, 7, categories.get(1), "Psychology of human behavior", "thinkingfastandslow.jpg"));
 
         // Add demo users
         users.add(new User(nextUserId++, "admin", "admin123", "admin@bookstore.com", "Admin User", "123 Admin St", true));
@@ -831,6 +846,18 @@ public class OnlineBookstoreApp extends JFrame {
             refreshBookTable(selectedCategory);
         });
 
+        bookCarouselPanel = new JPanel();
+        bookCarouselPanel.setLayout(new BoxLayout(bookCarouselPanel, BoxLayout.X_AXIS));
+        bookCarouselPanel.setBackground(BG_COLOR);
+        bookCarouselPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        bookCarouselScrollPane = new JScrollPane(bookCarouselPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        bookCarouselScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        bookCarouselScrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+        bookCarouselScrollPane.setPreferredSize(new Dimension(0, 320));
+
+        refreshBookTable(null);
+
         // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(BG_COLOR);
@@ -845,8 +872,9 @@ public class OnlineBookstoreApp extends JFrame {
         buttonPanel.add(Box.createHorizontalStrut(10));
         buttonPanel.add(addButton);
 
-        JPanel centerPanel = new JPanel(new BorderLayout());
+        JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setBackground(BG_COLOR);
+        centerPanel.add(bookCarouselScrollPane, BorderLayout.NORTH);
         centerPanel.add(new JScrollPane(bookTable), BorderLayout.CENTER);
         centerPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -1394,6 +1422,7 @@ public class OnlineBookstoreApp extends JFrame {
                 });
             }
         }
+        refreshBookCarousel(category);
     }
 
     /**
@@ -1410,6 +1439,90 @@ public class OnlineBookstoreApp extends JFrame {
                     String.format("$%.2f", item.getSubtotal())
             });
         }
+    }
+
+    private void refreshBookCarousel(Category category) {
+        bookCarouselPanel.removeAll();
+        for (Book book : books) {
+            if (category == null || book.getCategory().getId() == category.getId()) {
+                JPanel card = createBookCard(book);
+                bookCarouselPanel.add(card);
+                bookCarouselPanel.add(Box.createHorizontalStrut(14));
+            }
+        }
+        bookCarouselPanel.revalidate();
+        bookCarouselPanel.repaint();
+    }
+
+    private JPanel createBookCard(Book book) {
+        JPanel card = new JPanel();
+        card.setBackground(CARD_COLOR);
+        card.setPreferredSize(new Dimension(220, 320));
+        card.setMaximumSize(new Dimension(220, 320));
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(SECONDARY_COLOR, 1, true),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+
+        JLabel coverLabel = new JLabel();
+        coverLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        coverLabel.setPreferredSize(new Dimension(180, 240));
+        coverLabel.setMaximumSize(new Dimension(180, 240));
+        coverLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        ImageIcon coverIcon = getBookCoverIcon(book);
+        if (coverIcon != null) {
+            coverLabel.setIcon(coverIcon);
+        } else {
+            coverLabel.setText("Cover not found");
+            coverLabel.setForeground(SECONDARY_TEXT);
+        }
+
+        JLabel titleLabel = new JLabel("<html><center>" + book.getTitle() + "</center></html>");
+        titleLabel.setFont(new Font("Georgia", Font.BOLD, 14));
+        titleLabel.setForeground(TEXT_COLOR);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 4, 0));
+
+        JLabel priceLabel = new JLabel(String.format("$%.2f", book.getPrice()));
+        priceLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        priceLabel.setForeground(ACCENT_COLOR);
+        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel authorLabel = new JLabel("by " + book.getAuthor());
+        authorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        authorLabel.setForeground(SECONDARY_TEXT);
+        authorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        authorLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+
+        card.add(coverLabel);
+        card.add(titleLabel);
+        card.add(authorLabel);
+        card.add(Box.createVerticalGlue());
+        card.add(priceLabel);
+
+        return card;
+    }
+
+    private ImageIcon getBookCoverIcon(Book book) {
+        if (bookCoverMap.containsKey(book.getId())) {
+            return bookCoverMap.get(book.getId());
+        }
+
+        String imagePath = book.getImagePath();
+        for (String dir : IMAGE_DIRS) {
+            File imageFile = new File(dir, imagePath);
+            if (imageFile.exists()) {
+                ImageIcon icon = new ImageIcon(imageFile.getAbsolutePath());
+                Image image = icon.getImage().getScaledInstance(180, 240, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(image);
+                bookCoverMap.put(book.getId(), scaledIcon);
+                return scaledIcon;
+            }
+        }
+
+        bookCoverMap.put(book.getId(), null);
+        return null;
     }
 
     public static void main(String[] args) {
