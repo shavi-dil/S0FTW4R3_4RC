@@ -382,6 +382,7 @@ public class OnlineBookstoreApp extends JFrame {
     private DefaultTableModel cartModel;
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private JPanel authPanel;
     private JTabbedPane mainTabs;
     private JLabel userHeaderLabel;
     private JPanel bookCarouselPanel;
@@ -451,7 +452,8 @@ public class OnlineBookstoreApp extends JFrame {
         cardPanel.setBackground(BG_COLOR);
 
         // Add all screens to card panel
-        cardPanel.add(createAuthenticationPanel(), "AUTH");
+        authPanel = createAuthenticationPanel();
+        cardPanel.add(authPanel, "AUTH");
         cardPanel.add(createMainApplicationPanelLazy(), "MAIN");
 
         add(cardPanel);
@@ -540,9 +542,10 @@ public class OnlineBookstoreApp extends JFrame {
             User user = authenticate(username, password);
             if (user != null) {
                 currentUser = user;
-                // Replace placeholder with actual main panel
-                cardPanel.removeAll();
-                cardPanel.add(createAuthenticationPanel(), "AUTH");
+                // Recreate only the main panel so the authentication panel remains stable
+                if (cardPanel.getComponentCount() > 1) {
+                    cardPanel.remove(1);
+                }
                 cardPanel.add(createMainApplicationPanel(), "MAIN");
                 cardPanel.revalidate();
                 cardPanel.repaint();
@@ -679,7 +682,12 @@ public class OnlineBookstoreApp extends JFrame {
         logoutButton.addActionListener(e -> {
             currentUser = null;
             cart.clearCart();
+            if (cardPanel.getComponentCount() > 1) {
+                cardPanel.remove(1);
+            }
             cardLayout.show(cardPanel, "AUTH");
+            cardPanel.revalidate();
+            cardPanel.repaint();
         });
         panel.add(logoutButton, BorderLayout.EAST);
 
