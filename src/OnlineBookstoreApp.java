@@ -8,7 +8,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// ==================== CATEGORY CLASS ====================
+/**
+ * CATEGORY CLASS
+ * Represents a book category in the Online Bookstore Application
+ */
 class Category {
     private int id;
     private String name;
@@ -22,7 +25,11 @@ class Category {
     public String getName() { return name; }
 }
 
-// ==================== BOOK CLASS ====================
+/**
+ * Represents a book in the inventory.
+ * Maintains book information including title, author, price, stock, category, and description.
+ * Provides methods for stock management (increase/decrease).
+ */
 class Book {
     private int id;
     private String title;
@@ -59,7 +66,11 @@ class Book {
     }
 }
 
-// ==================== USER CLASS ====================
+/**
+ * Represents a user/customer account.
+ * Stores user credentials and profile information (email, address, etc).
+ * Supports admin and customer roles.
+ */
 class User {
     private int id;
     private String username;
@@ -92,7 +103,10 @@ class User {
     public void setAddress(String address) { this.address = address; }
 }
 
-// ==================== PAYMENT CLASS ====================
+/**
+ * Represents a payment transaction.
+ * Tracks payment status (PENDING, COMPLETED, FAILED) and transaction date.
+ */
 class Payment {
     private int id;
     private double amount;
@@ -114,7 +128,11 @@ class Payment {
     public void setStatus(String status) { this.status = status; }
 }
 
-// ==================== INVOICE CLASS ====================
+/**
+ * Represents an invoice for an order.
+ * Generates formatted invoice text with order details, items, and pricing.
+ * Stores invoice number, generation date, and associated order.
+ */
 class Invoice {
     private int id;
     private Order order;
@@ -170,7 +188,11 @@ class Invoice {
     }
 }
 
-// ==================== SHIPMENT CLASS ====================
+/**
+ * Represents shipment tracking information.
+ * Tracks shipment status (PENDING, SHIPPED, IN_TRANSIT, DELIVERED).
+ * Generates tracking numbers for order delivery management.
+ */
 class Shipment {
     private int id;
     private Order order;
@@ -196,7 +218,10 @@ class Shipment {
     public void setShipmentDate(LocalDateTime date) { this.shipmentDate = date; }
 }
 
-// ==================== ORDER ITEM CLASS ====================
+/**
+ * Represents an item in a shopping cart or order.
+ * Links a book with quantity and calculates subtotal.
+ */
 class OrderItem {
     private Book book;
     private int quantity;
@@ -218,7 +243,11 @@ class OrderItem {
     }
 }
 
-// ==================== ORDER CLASS ====================
+/**
+ * Represents a customer order.
+ * Contains order items, customer information, status, and associated payment/shipment.
+ * Manages order lifecycle from PENDING to DELIVERED or CANCELLED.
+ */
 class Order {
     private int id;
     private User customer;
@@ -263,7 +292,11 @@ class Order {
     public void setShipment(Shipment shipment) { this.shipment = shipment; }
 }
 
-// ==================== CART CLASS ====================
+/**
+ * Represents a shopping cart.
+ * Manages items before checkout with add, remove, and clear operations.
+ * Calculates total price of items in cart.
+ */
 class Cart {
     private ArrayList<OrderItem> items = new ArrayList<>();
 
@@ -301,12 +334,33 @@ class Cart {
 }
 
 
-// ==================== MAIN APPLICATION CLASS ====================
+/**
+ * ONLINE BOOKSTORE APPLICATION
+ * 
+ * A comprehensive Swing-based GUI application for managing an online bookstore with:
+ * - User authentication (login/registration)
+ * - Book browsing and categorization
+ * - Shopping cart functionality
+ * - Order processing and checkout
+ * - Invoice generation
+ * - Admin panel for order and shipment management
+ * 
+ * Features:
+ * - Category-based book filtering
+ * - Real-time stock management
+ * - Payment and shipment tracking
+ * - User profile management
+ * - Responsive GUI with professional styling
+ * 
+ * @author Bookstore Development Team
+ * @version 1.0
+ */
 public class OnlineBookstoreApp extends JFrame {
     private ArrayList<Book> books = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Order> orders = new ArrayList<>();
     private ArrayList<Category> categories = new ArrayList<>();
+    private ArrayList<Book> filteredBooks = new ArrayList<>();
     private Cart cart = new Cart();
     private User currentUser = null;
     private int nextUserId = 1;
@@ -321,6 +375,8 @@ public class OnlineBookstoreApp extends JFrame {
     private DefaultTableModel cartModel;
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private JTabbedPane mainTabs;
+    private JLabel userHeaderLabel;
 
     // Color scheme
     // Color scheme (navy-inspired bookstore theme)
@@ -354,7 +410,7 @@ public class OnlineBookstoreApp extends JFrame {
     }
 
     private void initializeData() {
-        // Load categories
+        // Load sample categories
         categories.add(new Category(1, "Fiction"));
         categories.add(new Category(2, "Non-Fiction"));
         categories.add(new Category(3, "Science"));
@@ -381,13 +437,24 @@ public class OnlineBookstoreApp extends JFrame {
 
         // Add all screens to card panel
         cardPanel.add(createAuthenticationPanel(), "AUTH");
-        cardPanel.add(createMainApplicationPanel(), "MAIN");
+        cardPanel.add(createMainApplicationPanelLazy(), "MAIN");
 
         add(cardPanel);
         cardLayout.show(cardPanel, "AUTH");
     }
 
+    private JPanel createMainApplicationPanelLazy() {
+        JPanel placeholder = new JPanel();
+        placeholder.setBackground(BG_COLOR);
+        return placeholder;
+    }
+
     // ==================== AUTHENTICATION PANEL ====================
+    /**
+     * Creates the authentication panel with login and registration tabs.
+     * Provides UI for users to authenticate or create new accounts.
+     * @return JPanel containing authentication interface
+     */
     private JPanel createAuthenticationPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(BG_COLOR);
@@ -427,6 +494,8 @@ public class OnlineBookstoreApp extends JFrame {
     }
 
     private JPanel createLoginPanel() {
+        // Creates login form with username and password fields
+        // Validates credentials against user database
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(BG_COLOR);
@@ -456,6 +525,12 @@ public class OnlineBookstoreApp extends JFrame {
             User user = authenticate(username, password);
             if (user != null) {
                 currentUser = user;
+                // Replace placeholder with actual main panel
+                cardPanel.removeAll();
+                cardPanel.add(createAuthenticationPanel(), "AUTH");
+                cardPanel.add(createMainApplicationPanel(), "MAIN");
+                cardPanel.revalidate();
+                cardPanel.repaint();
                 cardLayout.show(cardPanel, "MAIN");
                 usernameField.setText("");
                 passwordField.setText("");
@@ -469,6 +544,8 @@ public class OnlineBookstoreApp extends JFrame {
     }
 
     private JPanel createRegisterPanel() {
+        // Creates registration form for new user accounts
+        // Validates all required fields before account creation
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(BG_COLOR);
@@ -558,6 +635,8 @@ public class OnlineBookstoreApp extends JFrame {
         if (currentUser != null && currentUser.isAdmin()) {
             tabs.add("⚙️ Admin", createAdminPanel());
         }
+        
+        mainTabs = tabs;
 
         panel.add(tabs, BorderLayout.CENTER);
         return panel;
@@ -574,12 +653,12 @@ public class OnlineBookstoreApp extends JFrame {
         titleLabel.setFont(new Font("Georgia", Font.BOLD, 28));
         titleLabel.setForeground(Color.WHITE);
 
-        JLabel userLabel = new JLabel("Welcome, " + (currentUser != null ? currentUser.getFullName() : "Guest"));
-        userLabel.setFont(new Font("Georgia", Font.PLAIN, 14));
-        userLabel.setForeground(SECONDARY_TEXT);
+        userHeaderLabel = new JLabel("Welcome, " + (currentUser != null ? currentUser.getFullName() : "Guest"));
+        userHeaderLabel.setFont(new Font("Georgia", Font.PLAIN, 14));
+        userHeaderLabel.setForeground(SECONDARY_TEXT);
 
         panel.add(titleLabel, BorderLayout.WEST);
-        panel.add(userLabel, BorderLayout.CENTER);
+        panel.add(userHeaderLabel, BorderLayout.CENTER);
 
         JButton logoutButton = createStyledButton("🚪 Logout");
         logoutButton.addActionListener(e -> {
@@ -782,7 +861,7 @@ public class OnlineBookstoreApp extends JFrame {
             return;
         }
 
-        Book book = books.get(selectedRow);
+        Book book = filteredBooks.get(selectedRow);
         
         String details = String.format(
                 "📚 BOOK DETAILS\n\n" +
@@ -1213,6 +1292,12 @@ public class OnlineBookstoreApp extends JFrame {
         return button;
     }
 
+    /**
+     * Authenticates a user based on username and password credentials.
+     * @param username The username to authenticate
+     * @param password The password to verify
+     * @return The authenticated User object if credentials match, null otherwise
+     */
     private User authenticate(String username, String password) {
         for (User user : users) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
@@ -1222,6 +1307,11 @@ public class OnlineBookstoreApp extends JFrame {
         return null;
     }
 
+    /**
+     * Checks if a username already exists in the system.
+     * @param username The username to check
+     * @return true if user exists, false otherwise
+     */
     private boolean userExists(String username) {
         for (User user : users) {
             if (user.getUsername().equals(username)) {
@@ -1231,6 +1321,11 @@ public class OnlineBookstoreApp extends JFrame {
         return false;
     }
 
+    /**
+     * Adds the selected book from the book table to the shopping cart.
+     * Prompts user for quantity and validates stock availability.
+     * Updates cart table on successful addition.
+     */
     private void addSelectedBookToCart() {
         int selectedRow = bookTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -1238,7 +1333,7 @@ public class OnlineBookstoreApp extends JFrame {
             return;
         }
 
-        Book selectedBook = books.get(selectedRow);
+        Book selectedBook = filteredBooks.get(selectedRow);
 
         String quantityText = JOptionPane.showInputDialog(this, "Enter quantity:");
         try {
@@ -1262,6 +1357,10 @@ public class OnlineBookstoreApp extends JFrame {
         }
     }
 
+    /**
+     * Removes the selected item from the shopping cart.
+     * Updates cart display after removal.
+     */
     private void removeSelectedCartItem() {
         int selectedRow = cartTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -1274,10 +1373,17 @@ public class OnlineBookstoreApp extends JFrame {
         JOptionPane.showMessageDialog(this, "Item removed from cart.");
     }
 
+    /**
+     * Refreshes the book table with books optionally filtered by category.
+     * Maintains filtered book list for proper row-to-book mapping.
+     * @param category The category to filter by, or null to show all books
+     */
     private void refreshBookTable(Category category) {
         bookModel.setRowCount(0);
+        filteredBooks.clear();
         for (Book book : books) {
             if (category == null || book.getCategory().getId() == category.getId()) {
+                filteredBooks.add(book);
                 bookModel.addRow(new Object[]{
                         book.getId(),
                         book.getTitle(),
@@ -1290,6 +1396,10 @@ public class OnlineBookstoreApp extends JFrame {
         }
     }
 
+    /**
+     * Refreshes the cart table to display current cart items.
+     * Updates item quantities and prices in real-time.
+     */
     private void refreshCartTable() {
         cartModel.setRowCount(0);
         for (OrderItem item : cart.getItems()) {
