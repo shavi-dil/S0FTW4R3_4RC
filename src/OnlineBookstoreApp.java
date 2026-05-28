@@ -383,6 +383,7 @@ public class OnlineBookstoreApp extends JFrame {
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private JPanel authPanel;
+    private JPanel mainPanel;
     private JTabbedPane mainTabs;
     private JLabel userHeaderLabel;
     private JPanel bookCarouselPanel;
@@ -454,7 +455,8 @@ public class OnlineBookstoreApp extends JFrame {
         // Add all screens to card panel
         authPanel = createAuthenticationPanel();
         cardPanel.add(authPanel, "AUTH");
-        cardPanel.add(createMainApplicationPanelLazy(), "MAIN");
+        mainPanel = createMainApplicationPanelLazy();
+        cardPanel.add(mainPanel, "MAIN");
 
         add(cardPanel);
         cardLayout.show(cardPanel, "AUTH");
@@ -542,13 +544,7 @@ public class OnlineBookstoreApp extends JFrame {
             User user = authenticate(username, password);
             if (user != null) {
                 currentUser = user;
-                // Recreate only the main panel so the authentication panel remains stable
-                if (cardPanel.getComponentCount() > 1) {
-                    cardPanel.remove(1);
-                }
-                cardPanel.add(createMainApplicationPanel(), "MAIN");
-                cardPanel.revalidate();
-                cardPanel.repaint();
+                rebuildMainPanel();
                 cardLayout.show(cardPanel, "MAIN");
                 usernameField.setText("");
                 passwordField.setText("");
@@ -660,6 +656,24 @@ public class OnlineBookstoreApp extends JFrame {
         return panel;
     }
 
+    private void rebuildMainPanel() {
+        if (mainPanel != null) {
+            cardPanel.remove(mainPanel);
+        }
+        mainPanel = createMainApplicationPanel();
+        cardPanel.add(mainPanel, "MAIN");
+        cardPanel.revalidate();
+        cardPanel.repaint();
+    }
+
+    private void resetMainPanel() {
+        if (mainPanel != null) {
+            cardPanel.remove(mainPanel);
+        }
+        mainPanel = createMainApplicationPanelLazy();
+        cardPanel.add(mainPanel, "MAIN");
+    }
+
     private JPanel createHeaderPanel() {
         JPanel panel = new JPanel();
         panel.setBackground(PRIMARY_COLOR);
@@ -682,9 +696,7 @@ public class OnlineBookstoreApp extends JFrame {
         logoutButton.addActionListener(e -> {
             currentUser = null;
             cart.clearCart();
-            if (cardPanel.getComponentCount() > 1) {
-                cardPanel.remove(1);
-            }
+            resetMainPanel();
             cardLayout.show(cardPanel, "AUTH");
             cardPanel.revalidate();
             cardPanel.repaint();
