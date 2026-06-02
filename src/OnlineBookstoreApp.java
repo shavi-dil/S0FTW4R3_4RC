@@ -1,11 +1,8 @@
 import java.io.File;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -322,9 +319,6 @@ public class OnlineBookstoreApp extends JFrame {
     private JPanel bookCarouselPanel;
     private JScrollPane bookCarouselScrollPane;
 
-    private JTextField bookSearchField;
-    private Category selectedCategoryFilter;
-    private HashMap<Integer, JPanel> categoryCardMap = new HashMap<>();
     private HashMap<Integer, ImageIcon> bookCoverMap = new HashMap<>();
 
     private static final String[] IMAGE_DIRS = {
@@ -332,12 +326,9 @@ public class OnlineBookstoreApp extends JFrame {
             "src/images"
     };
 
-    private static final String SEARCH_PLACEHOLDER = "Search Title, Author or ISBN";
     private static final Color BG_COLOR = new Color(250, 247, 242);
     private static final Color PRIMARY_COLOR = new Color(8, 35, 70);
     private static final Color SECONDARY_COLOR = new Color(42, 76, 118);
-    private static final Color CATEGORY_CARD_COLOR = new Color(95, 22, 30);
-    private static final Color CATEGORY_CARD_SELECTED = new Color(170, 38, 50);
     private static final Color CARD_COLOR = Color.WHITE;
     private static final Color TEXT_COLOR = new Color(47, 47, 47);
     private static final Color SECONDARY_TEXT = new Color(122, 122, 122);
@@ -611,42 +602,19 @@ public class OnlineBookstoreApp extends JFrame {
         logo.setFont(new Font("Georgia", Font.BOLD, 24));
         logo.setForeground(new Color(190, 20, 40));
 
-        bookSearchField = new JTextField(SEARCH_PLACEHOLDER);
-        bookSearchField.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        bookSearchField.setForeground(Color.GRAY);
-        bookSearchField.setBorder(BorderFactory.createCompoundBorder(
+        JTextField searchBar = new JTextField("Search Title, Author or ISBN");
+        searchBar.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        searchBar.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true),
                 BorderFactory.createEmptyBorder(10, 18, 10, 18)
         ));
-
-        bookSearchField.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent e) {
-                if (bookSearchField.getText().equals(SEARCH_PLACEHOLDER)) {
-                    bookSearchField.setText("");
-                    bookSearchField.setForeground(Color.BLACK);
-                }
-            }
-
-            public void focusLost(FocusEvent e) {
-                if (bookSearchField.getText().trim().isEmpty()) {
-                    bookSearchField.setText(SEARCH_PLACEHOLDER);
-                    bookSearchField.setForeground(Color.GRAY);
-                }
-            }
-        });
-
-        bookSearchField.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { refreshBookCarousel(); }
-            public void removeUpdate(DocumentEvent e) { refreshBookCarousel(); }
-            public void changedUpdate(DocumentEvent e) { refreshBookCarousel(); }
-        });
 
         JLabel icons = new JLabel("Select Store   ♡   👤   🛒");
         icons.setFont(new Font("Segoe UI", Font.BOLD, 14));
         icons.setForeground(TEXT_COLOR);
 
         topNav.add(logo, BorderLayout.WEST);
-        topNav.add(bookSearchField, BorderLayout.CENTER);
+        topNav.add(searchBar, BorderLayout.CENTER);
         topNav.add(icons, BorderLayout.EAST);
 
         panel.add(topNav, BorderLayout.NORTH);
@@ -660,10 +628,10 @@ public class OnlineBookstoreApp extends JFrame {
         categoryPanel.setBackground(Color.WHITE);
         categoryPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
 
-        categoryPanel.add(createCategoryCard("Shop Fiction", categories.get(0)));
-        categoryPanel.add(createCategoryCard("Shop Non-Fiction", categories.get(1)));
-        categoryPanel.add(createCategoryCard("Shop Science", categories.get(2)));
-        categoryPanel.add(createCategoryCard("Shop Self-Help", categories.get(3)));
+        categoryPanel.add(createCategoryCard("Shop Fiction"));
+        categoryPanel.add(createCategoryCard("Shop Non-Fiction"));
+        categoryPanel.add(createCategoryCard("Shop Science"));
+        categoryPanel.add(createCategoryCard("Shop Self-Help"));
 
         content.add(categoryPanel);
         content.add(Box.createVerticalStrut(35));
@@ -671,7 +639,7 @@ public class OnlineBookstoreApp extends JFrame {
         JPanel titleRow = new JPanel(new BorderLayout());
         titleRow.setBackground(Color.WHITE);
 
-        JLabel sectionTitle = new JLabel("Top Bestselling books");
+        JLabel sectionTitle = new JLabel("Top 50 Books This Week");
         sectionTitle.setFont(new Font("Segoe UI", Font.BOLD, 30));
         sectionTitle.setForeground(new Color(35, 35, 35));
 
@@ -680,11 +648,6 @@ public class OnlineBookstoreApp extends JFrame {
         viewAllButton.setFocusPainted(false);
         viewAllButton.setBorderPainted(false);
         viewAllButton.setContentAreaFilled(false);
-        viewAllButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        viewAllButton.addActionListener(e -> {
-            selectedCategoryFilter = null;
-            refreshBookCarousel();
-        });
 
         titleRow.add(sectionTitle, BorderLayout.WEST);
         titleRow.add(viewAllButton, BorderLayout.EAST);
@@ -706,7 +669,7 @@ public class OnlineBookstoreApp extends JFrame {
         bookCarouselScrollPane.getHorizontalScrollBar().setUnitIncrement(18);
         bookCarouselScrollPane.setPreferredSize(new Dimension(1100, 420));
 
-        refreshBookCarousel();
+        refreshBookCarousel(null);
 
         content.add(bookCarouselScrollPane);
         panel.add(content, BorderLayout.CENTER);
@@ -714,11 +677,10 @@ public class OnlineBookstoreApp extends JFrame {
         return panel;
     }
 
-    private JPanel createCategoryCard(String text, Category category) {
+    private JPanel createCategoryCard(String text) {
         JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(CATEGORY_CARD_COLOR);
+        card.setBackground(new Color(95, 22, 30));
         card.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         JLabel label = new JLabel(text);
         label.setForeground(Color.WHITE);
@@ -726,74 +688,21 @@ public class OnlineBookstoreApp extends JFrame {
         label.setHorizontalAlignment(SwingConstants.CENTER);
 
         card.add(label, BorderLayout.CENTER);
-        categoryCardMap.put(category.getId(), card);
-
-        card.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                selectedCategoryFilter = category;
-                refreshBookCarousel();
-            }
-        });
-
         return card;
     }
 
-    private void refreshBookCarousel() {
-        String query = "";
-        if (bookSearchField != null) {
-            String rawText = bookSearchField.getText().trim();
-            if (!SEARCH_PLACEHOLDER.equals(rawText)) {
-                query = rawText.toLowerCase();
-            }
-        }
-
+    private void refreshBookCarousel(Category category) {
         bookCarouselPanel.removeAll();
-        boolean found = false;
 
         for (Book book : books) {
-            if (matchesBookFilter(book, query, selectedCategoryFilter)) {
+            if (category == null || book.getCategory().getId() == category.getId()) {
                 bookCarouselPanel.add(createBookCard(book));
                 bookCarouselPanel.add(Box.createHorizontalStrut(25));
-                found = true;
             }
         }
 
-        if (!found) {
-            JPanel emptyPanel = new JPanel();
-            emptyPanel.setBackground(Color.WHITE);
-            JLabel emptyLabel = new JLabel("No books match your search or selected category.");
-            emptyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-            emptyLabel.setForeground(TEXT_COLOR);
-            emptyPanel.add(emptyLabel);
-            bookCarouselPanel.add(emptyPanel);
-        }
-
-        updateCategoryCardStyles();
         bookCarouselPanel.revalidate();
         bookCarouselPanel.repaint();
-    }
-
-    private boolean matchesBookFilter(Book book, String query, Category category) {
-        if (category != null && book.getCategory().getId() != category.getId()) {
-            return false;
-        }
-        if (query.isEmpty()) {
-            return true;
-        }
-        return book.getTitle().toLowerCase().contains(query)
-                || book.getAuthor().toLowerCase().contains(query)
-                || String.valueOf(book.getId()).contains(query);
-    }
-
-    private void updateCategoryCardStyles() {
-        for (Integer id : categoryCardMap.keySet()) {
-            JPanel card = categoryCardMap.get(id);
-            if (selectedCategoryFilter != null && selectedCategoryFilter.getId() == id) {
-                card.setBackground(CATEGORY_CARD_SELECTED);
-            } else {
-                card.setBackground(CATEGORY_CARD_COLOR);
-            }
-        }
     }
 
     private JPanel createBookCard(Book book) {
@@ -803,6 +712,11 @@ public class OnlineBookstoreApp extends JFrame {
         card.setPreferredSize(new Dimension(185, 395));
         card.setMaximumSize(new Dimension(185, 395));
         card.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        JLabel heart = new JLabel("♡");
+        heart.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+        heart.setForeground(new Color(40, 40, 40));
+        heart.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         JLabel coverLabel = new JLabel();
         coverLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -847,6 +761,8 @@ public class OnlineBookstoreApp extends JFrame {
             JOptionPane.showMessageDialog(this, book.getTitle() + " added to cart.");
         });
 
+        card.add(heart);
+        card.add(Box.createVerticalStrut(5));
         card.add(coverLabel);
         card.add(Box.createVerticalStrut(12));
         card.add(authorLabel);
@@ -887,27 +803,9 @@ public class OnlineBookstoreApp extends JFrame {
         panel.setBackground(BG_COLOR);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        cartModel = new DefaultTableModel(new String[]{"Cover", "Title", "Qty", "Unit Price", "Subtotal"}, 0) {
-            @Override
-            public Class<?> getColumnClass(int column) {
-                return column == 0 ? ImageIcon.class : Object.class;
-            }
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        cartModel = new DefaultTableModel(new String[]{"Title", "Qty", "Unit Price", "Subtotal"}, 0);
         cartTable = new JTable(cartModel);
-        cartTable.setRowHeight(90);
-        cartTable.setDefaultRenderer(ImageIcon.class, new DefaultTableCellRenderer() {
-            @Override
-            public void setValue(Object value) {
-                setText("");
-                setIcon(value instanceof ImageIcon ? (ImageIcon) value : null);
-                setHorizontalAlignment(CENTER);
-            }
-        });
+        cartTable.setRowHeight(28);
 
         refreshCartTable();
 
@@ -952,22 +850,12 @@ public class OnlineBookstoreApp extends JFrame {
 
         for (OrderItem item : cart.getItems()) {
             cartModel.addRow(new Object[]{
-                    getCartCoverIcon(item.getBook()),
                     item.getBook().getTitle(),
                     item.getQuantity(),
                     String.format("$%.2f", item.getBook().getPrice()),
                     String.format("$%.2f", item.getSubtotal())
             });
         }
-    }
-
-    private ImageIcon getCartCoverIcon(Book book) {
-        ImageIcon icon = getBookCoverIcon(book);
-        if (icon == null) {
-            return null;
-        }
-        Image image = icon.getImage().getScaledInstance(70, 90, Image.SCALE_SMOOTH);
-        return new ImageIcon(image);
     }
 
     // ==================== CHECKOUT PANEL ====================
