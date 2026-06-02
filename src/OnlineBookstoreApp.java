@@ -1,15 +1,16 @@
-import java.io.File;
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 // ==================== CATEGORY CLASS ====================
 class Category {
@@ -299,6 +300,7 @@ class Cart {
 
 // ==================== MAIN APPLICATION CLASS ====================
 public class OnlineBookstoreApp extends JFrame {
+    private static final String USER_FILE = "users.txt";
     private ArrayList<Book> books = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Order> orders = new ArrayList<>();
@@ -477,6 +479,39 @@ public class OnlineBookstoreApp extends JFrame {
         return panel;
     }
 
+    private boolean userExists(String username, String password, String email, String fullName, String address) {
+    for (User user : users) {
+        if (user.getUsername().equalsIgnoreCase(username)
+                || user.getPassword().equals(password)
+                || user.getEmail().equalsIgnoreCase(email)
+                || user.getFullName().equalsIgnoreCase(fullName)
+                || user.getAddress().equalsIgnoreCase(address)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+    private void saveUserToFile(User user) {
+    try {
+        FileWriter writer = new FileWriter(USER_FILE, true);
+
+        writer.write(
+            user.getId() + "," +
+            user.getUsername() + "," +
+            user.getPassword() + "," +
+            user.getEmail() + "," +
+            user.getFullName() + "," +
+            user.getAddress() + "," +
+            user.isAdmin() + "\n"
+        );
+
+        writer.close();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
     private JPanel createRegisterPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -509,12 +544,15 @@ public class OnlineBookstoreApp extends JFrame {
                 return;
             }
 
-            if (userExists(username)) {
+            if (userExists(username, password, email, fullName, address)) {
                 JOptionPane.showMessageDialog(this, "Username already exists.");
                 return;
             }
 
-            users.add(new User(nextUserId++, username, password, email, fullName, address, false));
+            User newUser = new User(nextUserId++, username, password, email, fullName, address, false);
+
+            users.add(newUser);
+            saveUserToFile(newUser);
             JOptionPane.showMessageDialog(this, "Account created successfully. Please login.");
 
             usernameField.setText("");
