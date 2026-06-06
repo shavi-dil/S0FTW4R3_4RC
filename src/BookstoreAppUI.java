@@ -849,46 +849,62 @@ public class BookstoreAppUI extends JFrame {
         JOptionPane.showMessageDialog(this, "Account details updated successfully.", "Saved", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private ImageIcon getBookCoverIcon(Book book) {
-        String fileName = sanitizeFileName(book.getTitle()) + ".jpg";
-        BufferedImage image = null;
+private ImageIcon getBookCoverIcon(Book book) {
 
-        // First try classpath resource (works when src is on the classpath).
-        URL resource = getClass().getResource("/images/" + fileName);
-        if (resource != null) {
+    String fileName = sanitizeFileName(book.getTitle()) + ".jpg";
+
+    String[] paths = {
+            "images/" + fileName,
+            "src/images/" + fileName,
+            System.getProperty("user.dir") + "/images/" + fileName,
+            System.getProperty("user.dir") + "/src/images/" + fileName
+    };
+
+    for (String path : paths) {
+
+        File imageFile = new File(path);
+
+        System.out.println("Checking image: " + imageFile.getAbsolutePath());
+
+        if (imageFile.exists()) {
+
             try {
-                image = ImageIO.read(resource);
-            } catch (IOException ignored) {
-            }
-        }
 
-        // Then try common runtime file-system locations.
-        if (image == null) {
-            String[] paths = {
-                    "src/images/" + fileName,
-                    "images/" + fileName,
-                    "../src/images/" + fileName,
-                    System.getProperty("user.dir") + "/src/images/" + fileName,
-                    System.getProperty("user.dir") + "/images/" + fileName
-            };
-            for (String path : paths) {
-                File imageFile = new File(path);
-                if (imageFile.exists()) {
-                    try {
-                        image = ImageIO.read(imageFile);
-                        break;
-                    } catch (IOException ignored) {
-                    }
+                BufferedImage image = ImageIO.read(imageFile);
+
+                if (image != null) {
+
+                    Image scaled = image.getScaledInstance(
+                            160,
+                            210,
+                            Image.SCALE_SMOOTH
+                    );
+
+                    return new ImageIcon(scaled);
                 }
+
+            } catch (IOException e) {
+
+                System.out.println(
+                        "Could not load image: "
+                                + imageFile.getAbsolutePath()
+                );
             }
         }
-
-        if (image == null) {
-            image = createPlaceholderImage(160, 210);
-        }
-        Image scaled = image.getScaledInstance(160, 210, Image.SCALE_SMOOTH);
-        return new ImageIcon(scaled);
     }
+
+    System.out.println(
+            "Image not found for: "
+                    + book.getTitle()
+                    + " expected file: "
+                    + fileName
+    );
+
+    BufferedImage placeholder =
+            createPlaceholderImage(160, 210);
+
+    return new ImageIcon(placeholder);
+}
 
     private BufferedImage createPlaceholderImage(int width, int height) {
         BufferedImage placeholder = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
