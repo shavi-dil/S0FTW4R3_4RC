@@ -104,6 +104,10 @@ public class BookstoreStorage {
         books.add(new Book(nextBookId++, "AI Basics", "Tom Smith", 30.00, 6, categories.get(2), "Introduction to artificial intelligence."));
         books.add(new Book(nextBookId++, "Sapiens", "Yuval Noah Harari", 28.00, 9, categories.get(1), "A brief history of humankind."));
         books.add(new Book(nextBookId++, "Thinking, Fast and Slow", "Daniel Kahneman", 35.00, 7, categories.get(1), "Psychology of human behavior."));
+        books.add(new Book(nextBookId++, "The Silent Patient", "Alex Michaelides", 20.00, 10, categories.get(0), "A suspenseful fiction novel about a shocking crime."));
+        books.add(new Book(nextBookId++, "Educated", "Tara Westover", 24.00, 8, categories.get(1), "A memoir of family, education and resilience."));
+        books.add(new Book(nextBookId++, "A Brief History of Time", "Stephen Hawking", 27.00, 6, categories.get(2), "A classic guide to the universe and modern physics."));
+        books.add(new Book(nextBookId++, "The Power of Habit", "Charles Duhigg", 21.00, 10, categories.get(3), "How habits shape our lives and how to change them."));
 
         addAdmin("admin", "admin123", "admin@bookstore.com", "Admin User", "123 Admin Street");
         addCustomer("john_doe", "password123", "john@email.com", "John Doe", "456 Main Street");
