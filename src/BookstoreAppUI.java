@@ -1,8 +1,12 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 public class BookstoreAppUI extends JFrame {
@@ -414,14 +418,14 @@ public class BookstoreAppUI extends JFrame {
         JPanel categoryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
         categoryPanel.setOpaque(false);
         for (Category category : service.getCategories()) {
-            JButton categoryButton = createSecondaryButton(category.getName());
+            JButton categoryButton = createSecondaryButton("Show " + category.getName());
             categoryButton.addActionListener(e -> {
                 activeCategory = category;
                 refreshBrowseGrid();
             });
             categoryPanel.add(categoryButton);
         }
-        JButton allButton = createSecondaryButton("View All");
+        JButton allButton = createSecondaryButton("Show All");
         allButton.addActionListener(e -> {
             activeCategory = new Category(0, "All Categories");
             refreshBrowseGrid();
@@ -758,6 +762,7 @@ public class BookstoreAppUI extends JFrame {
         JLabel coverLabel = new JLabel(getBookCoverIcon(book));
         coverLabel.setHorizontalAlignment(SwingConstants.CENTER);
         coverLabel.setPreferredSize(new Dimension(160, 210));
+        coverLabel.setText("");
         card.add(coverLabel, BorderLayout.NORTH);
 
         JPanel infoPanel = new JPanel(new GridLayout(0, 1, 4, 4));
@@ -846,16 +851,62 @@ public class BookstoreAppUI extends JFrame {
 
     private ImageIcon getBookCoverIcon(Book book) {
         String fileName = sanitizeFileName(book.getTitle()) + ".jpg";
-        File imageFile = new File("src/images/" + fileName);
-        ImageIcon icon = null;
-        if (imageFile.exists()) {
-            icon = new ImageIcon(imageFile.getPath());
-        } else {
-            icon = new ImageIcon();
+        BufferedImage image = null;
+
+        // First try classpath resource (works when src is on the classpath).
+        URL resource = getClass().getResource("/images/" + fileName);
+        if (resource != null) {
+            try {
+                image = ImageIO.read(resource);
+            } catch (IOException ignored) {
+            }
         }
-        Image image = icon.getImage();
+
+        // Then try common runtime file-system locations.
+        if (image == null) {
+            String[] paths = {
+                    "src/images/" + fileName,
+                    "images/" + fileName,
+                    "../src/images/" + fileName,
+                    System.getProperty("user.dir") + "/src/images/" + fileName,
+                    System.getProperty("user.dir") + "/images/" + fileName
+            };
+            for (String path : paths) {
+                File imageFile = new File(path);
+                if (imageFile.exists()) {
+                    try {
+                        image = ImageIO.read(imageFile);
+                        break;
+                    } catch (IOException ignored) {
+                    }
+                }
+            }
+        }
+
+        if (image == null) {
+            image = createPlaceholderImage(160, 210);
+        }
         Image scaled = image.getScaledInstance(160, 210, Image.SCALE_SMOOTH);
         return new ImageIcon(scaled);
+    }
+
+    private BufferedImage createPlaceholderImage(int width, int height) {
+        BufferedImage placeholder = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = placeholder.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(BG_SECONDARY);
+        g2.fillRoundRect(0, 0, width, height, 24, 24);
+        g2.setColor(SECONDARY);
+        g2.fillRoundRect(6, 6, width - 12, height - 12, 20, 20);
+        g2.setColor(TEXT_SECOND);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 18));
+        FontMetrics fm = g2.getFontMetrics();
+        String text = "No Image";
+        int textX = (width - fm.stringWidth(text)) / 2;
+        int textY = (height - fm.getHeight()) / 2 + fm.getAscent();
+        g2.drawString(text, textX, textY);
+        g2.dispose();
+        return placeholder;
     }
 
     private String sanitizeFileName(String title) {
