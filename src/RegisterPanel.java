@@ -18,14 +18,14 @@ public class RegisterPanel extends JPanel {
         // Center the card-style form
         JPanel centerContainer = new JPanel(new GridBagLayout());
         centerContainer.setOpaque(false);
+        centerContainer.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
 
         JPanel card = new JPanel(new BorderLayout(0, 16));
         card.setBackground(Theme.PANEL_WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(0, 0, 0, 30), 1),
-                BorderFactory.createEmptyBorder(20, 28, 20, 28)
-        ));
-        card.setPreferredSize(new Dimension(480, 620));
+                BorderFactory.createEmptyBorder(20, 28, 32, 28)));
+        card.setMaximumSize(new Dimension(540, Integer.MAX_VALUE));
 
         // Title
         JLabel title = new JLabel("Create your account");
@@ -36,7 +36,7 @@ public class RegisterPanel extends JPanel {
         // Form fields
         JPanel formContainer = new JPanel(new BorderLayout());
         formContainer.setOpaque(false);
-        
+
         JPanel form = new JPanel(new GridLayout(6, 1, 0, 10));
         form.setOpaque(false);
 
@@ -82,6 +82,7 @@ public class RegisterPanel extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent e) {
                 submitButton.setBackground(Theme.DARK_NAVY);
             }
+
             public void mouseExited(java.awt.event.MouseEvent e) {
                 submitButton.setBackground(Theme.NAVY_BLUE);
             }
@@ -99,7 +100,15 @@ public class RegisterPanel extends JPanel {
         card.add(bottomPanel, BorderLayout.SOUTH);
 
         centerContainer.add(card);
-        add(centerContainer, BorderLayout.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane(centerContainer,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getViewport().setBackground(Theme.DUSTY_BLUE);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     public void setToggleAction(String toggleText, Runnable action) {

@@ -77,7 +77,8 @@ public class MainFrame extends JFrame {
         heading.setFont(new Font("SansSerif", Font.BOLD, 32));
         hero.add(heading, BorderLayout.NORTH);
 
-        JLabel summary = new JLabel("Browse curated books, manage your cart, and place orders with a clean Ink and Lantern Books theme.");
+        JLabel summary = new JLabel(
+                "Browse curated books, manage your cart, and place orders with a clean Ink and Lantern Books theme.");
         summary.setForeground(Theme.TEXT_SECONDARY);
         summary.setFont(new Font("SansSerif", Font.PLAIN, 18));
         hero.add(summary, BorderLayout.CENTER);
@@ -207,6 +208,10 @@ public class MainFrame extends JFrame {
             showError("Password cannot be blank.");
             return;
         }
+        if (confirmPassword.isEmpty()) {
+            showError("Please confirm your password.");
+            return;
+        }
         if (!password.equals(confirmPassword)) {
             showError("Passwords do not match.");
             return;
@@ -262,7 +267,7 @@ public class MainFrame extends JFrame {
     }
 
     private void browseBooksAsGuest() {
-        Customer guestCustomer = new Customer("Guest User", "guest@inklantern.com", "guest", 
+        Customer guestCustomer = new Customer("Guest User", "guest@inklantern.com", "guest",
                 "0412345678", "Guest Address");
         currentCustomer = guestCustomer;
         statusLabel.setText("Browsing as guest — Create an account to checkout");
@@ -278,6 +283,7 @@ public class MainFrame extends JFrame {
     }
 
     private void showSuccessMessage() {
-        JOptionPane.showMessageDialog(this, "Action completed successfully.", "Ink and Lantern Books", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Action completed successfully.", "Ink and Lantern Books",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }
