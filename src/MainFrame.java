@@ -14,7 +14,7 @@ public class MainFrame extends JFrame {
     private AdminDashboardPanel adminPanel;
 
     public MainFrame() {
-        setTitle("Ink and Lantern Books");
+        setTitle("Favourite Books");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1280, 820);
         setLocationRelativeTo(null);
@@ -39,7 +39,7 @@ public class MainFrame extends JFrame {
         navbar.setBackground(Theme.DUSTY_BLUE);
         navbar.setBorder(BorderFactory.createEmptyBorder(12, 18, 12, 18));
 
-        JLabel title = new JLabel("Ink and Lantern Books");
+        JLabel title = new JLabel("Favourite Books");
         title.setForeground(Color.WHITE);
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
         navbar.add(title, BorderLayout.WEST);
@@ -78,7 +78,7 @@ public class MainFrame extends JFrame {
         hero.add(heading, BorderLayout.NORTH);
 
         JLabel summary = new JLabel(
-                "Browse curated books, manage your cart, and place orders with a clean Ink and Lantern Books theme.");
+                "Browse curated books, manage your cart, and place orders with a clean Favourite Books theme.");
         summary.setForeground(Theme.TEXT_SECONDARY);
         summary.setFont(new Font("SansSerif", Font.PLAIN, 18));
         hero.add(summary, BorderLayout.CENTER);
@@ -153,7 +153,7 @@ public class MainFrame extends JFrame {
         }
         currentCustomer = customer;
         statusLabel.setText("Logged in as: " + customer.getName());
-        showInfo("Login successful. Welcome to Ink and Lantern Books!");
+        showInfo("Login successful. Welcome to Favourite Books!");
         loginPanel.resetFields();
         customerDashboard();
     }
@@ -223,7 +223,7 @@ public class MainFrame extends JFrame {
         Customer newCustomer = new Customer(name, email, password, phone, address);
         data.addCustomer(newCustomer);
         currentCustomer = newCustomer;
-        showInfo("Account created successfully. Welcome to Ink and Lantern Books!");
+        showInfo("Account created successfully. Welcome to Favourite Books!");
         registerPanel.resetFields();
         statusLabel.setText("Logged in as: " + newCustomer.getName());
         customerDashboard();
@@ -267,7 +267,7 @@ public class MainFrame extends JFrame {
     }
 
     private void browseBooksAsGuest() {
-        Customer guestCustomer = new Customer("Guest User", "guest@inklantern.com", "guest",
+        Customer guestCustomer = new Customer("Guest User", "guest@favouritebooks.com", "guest",
                 "0412345678", "Guest Address");
         currentCustomer = guestCustomer;
         statusLabel.setText("Browsing as guest — Create an account to checkout");
@@ -275,15 +275,15 @@ public class MainFrame extends JFrame {
     }
 
     private void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "Ink and Lantern Books", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, "Favourite Books", JOptionPane.WARNING_MESSAGE);
     }
 
     private void showInfo(String message) {
-        JOptionPane.showMessageDialog(this, message, "Ink and Lantern Books", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, "Favourite Books", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void showSuccessMessage() {
-        JOptionPane.showMessageDialog(this, "Action completed successfully.", "Ink and Lantern Books",
+        JOptionPane.showMessageDialog(this, "Action completed successfully.", "Favourite Books",
                 JOptionPane.INFORMATION_MESSAGE);
     }
 }

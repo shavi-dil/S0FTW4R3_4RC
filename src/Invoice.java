@@ -13,7 +13,7 @@ public class Invoice {
     public String buildReceiptText() {
         DecimalFormat df = new DecimalFormat("0.00");
         StringBuilder sb = new StringBuilder();
-        sb.append("Ink and Lantern Books - Invoice and Receipt\n");
+        sb.append("Favourite Books - Invoice and Receipt\n");
         sb.append("----------------------------------------------------\n");
         sb.append("Invoice No: INV-").append(order.getOrderNumber()).append("\n");
         sb.append("Order No: ").append(order.getOrderNumber()).append("\n");

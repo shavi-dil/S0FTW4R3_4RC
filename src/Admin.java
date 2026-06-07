@@ -1,5 +1,5 @@
 /**
- * Administrator user account for Ink and Lantern Books.
+ * Administrator user account for Favourite Books.
  */
 public class Admin extends User {
     public Admin(String name, String email, String password) {
